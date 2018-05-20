@@ -14,6 +14,9 @@ namespace GameServer {
         public byte[] readBuff = new byte[BUFFER_SIZE];
 
         public int bufferCount = 0;
+           
+        //心跳时间戳
+        public long lastTickTime = long.MinValue;
 
         public Connection() {
             readBuff = new byte[BUFFER_SIZE];
@@ -26,6 +29,9 @@ namespace GameServer {
             isUse = true;
 
             bufferCount = 0;
+
+            //初始化心跳时间
+            lastTickTime = Sys.GetTimeStamp();
         }
 
         //缓冲区剩余字节数
@@ -35,11 +41,18 @@ namespace GameServer {
 
         //获取客户端地址
         public string GetAddress() {
+            string result;
             if (!isUse) {
-                return "无法获取地址";
+                result = "无法获取地址";
             } else {
-                return socket.RemoteEndPoint.ToString();
+                try {
+                    result = socket.RemoteEndPoint.ToString();
+                } catch {
+                    result = "无法获取地址";
+                }
             }
+
+            return result;
         }
 
         //关闭该连接
@@ -50,7 +63,9 @@ namespace GameServer {
 
             Console.WriteLine("【断开连接】" + GetAddress());
 
-            socket.Close();
+            if(socket != null) {
+                socket.Close();
+            }
             isUse = false;
         }
     }

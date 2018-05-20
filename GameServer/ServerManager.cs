@@ -21,6 +21,11 @@ namespace GameServer {
         private string success = "SUCCESS";
         private string repeat = "REPEAT";
 
+        //创建主计时器，每秒执行一次
+        private System.Timers.Timer timer = new System.Timers.Timer(1000);
+        //心跳检查时间间隔
+        public long heartBeatTime = 20;
+
 
         public int NewIndex() {
             if(conns == null) {
@@ -44,7 +49,6 @@ namespace GameServer {
 
         //启用连接
         public void Start(string host, int port) {
-
             string connStr = "Database=potatoglory;Data Source=127.0.0.1;";
             connStr += "User Id=root;Password=software@#2018;port=3306";
 
@@ -69,12 +73,49 @@ namespace GameServer {
 
             IPEndPoint ipEp = new IPEndPoint(ipAdr, port);
 
+            //开启监听端口
             listenfd.Bind(ipEp);
-
             listenfd.Listen(maxConn);
 
+            //开启接收回调函数
             listenfd.BeginAccept(Acceptcb, null);
+
+
+            //启动心跳机制
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(HandleMainTimer);
+            timer.AutoReset = false;
+            timer.Enabled = true;
+
             Console.WriteLine("【服务器】启动成功");
+        }
+
+        public void HandleMainTimer(object sender, System.Timers.ElapsedEventArgs e) {
+            HeartBeat();
+            timer.Start();
+        }
+
+        public void HeartBeat() {
+            long timeNow = Sys.GetTimeStamp();
+
+            for(int i = 0; i < conns.Length; i++) {
+                Connection conn = conns[i];
+
+                if(conn == null) {
+                    continue;
+                }
+
+                if (!conn.isUse) {
+                    continue;
+                }
+
+                if(conn.lastTickTime < timeNow - heartBeatTime) {
+                    Console.WriteLine("【心跳引起断开连接】" + conn.GetAddress());
+
+                    lock (conn) {
+                        conn.Close();
+                    }
+                }
+            }
         }
 
         private void Acceptcb(IAsyncResult ar) {
@@ -105,11 +146,12 @@ namespace GameServer {
                         Receivecb,
                         conn);
                 }
-
-                listenfd.BeginAccept(Acceptcb, null);
             } catch(Exception e) {
                 Console.WriteLine("Acceptcb失败: " + e.Message);
             }
+
+            //确保能不断循环接收信息
+            listenfd.BeginAccept(Acceptcb, null);
         }
 
         private void Receivecb(IAsyncResult ar) {
@@ -149,6 +191,13 @@ namespace GameServer {
 
 
         public void HandleMsg(Connection conn, string str) {
+            //如果是心跳协议，那么更新心跳时间戳
+            if(str == "HeartBeat") {
+                conn.lastTickTime = Sys.GetTimeStamp();
+                return;
+            }
+
+
             string[] args = str.Split(' ');
             string resultStr = "";
 
@@ -160,20 +209,21 @@ namespace GameServer {
                 } else {
                     resultStr = args[0] + " " + fail;
                 }
-            } else {
-                if(args[0] == "REGISTER") {
-                    if (CanRegister(args[1])) {
-                        bool result = Register(args[1], args[2]);
+            } else if(args[0] == "REGISTER") {
+                if (CanRegister(args[1])) {
+                    bool result = Register(args[1], args[2]);
 
-                        if (result) {
-                            resultStr = args[0] + " " + success;
-                        } else {
-                            resultStr = args[0] + " " + fail;
-                        }
+                    if (result) {
+                        resultStr = args[0] + " " + success;
                     } else {
-                        resultStr = args[0] + " " + repeat;
+                        resultStr = args[0] + " " + fail;
                     }
+                } else {
+                    resultStr = args[0] + " " + repeat;
                 }
+            } else {
+                Console.WriteLine("【服务器】未知协议");
+                return;
             }
 
             conn.socket.Send(System.Text.Encoding.Default.GetBytes(resultStr));

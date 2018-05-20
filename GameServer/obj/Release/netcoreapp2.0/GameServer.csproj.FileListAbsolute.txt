@@ -9,3 +9,14 @@ D:\Projects\C#\GameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.Assemb
 D:\Projects\C#\GameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.dll
 D:\Projects\C#\GameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.pdb
 D:\Projects\C#\GameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.csprojResolveAssemblyReference.cache
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\bin\Release\netcoreapp2.0\GameServer.deps.json
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\bin\Release\netcoreapp2.0\GameServer.runtimeconfig.json
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\bin\Release\netcoreapp2.0\GameServer.runtimeconfig.dev.json
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\bin\Release\netcoreapp2.0\GameServer.dll
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\bin\Release\netcoreapp2.0\GameServer.pdb
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.csprojResolveAssemblyReference.cache
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.csproj.CoreCompileInputs.cache
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.AssemblyInfoInputs.cache
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.AssemblyInfo.cs
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.dll
+D:\Projects\Repository\PotatoGloryGameServer\GameServer\obj\Release\netcoreapp2.0\GameServer.pdb
